@@ -20,14 +20,17 @@ Anyone with push access can name a remote branch, so take one as a target only i
 For each target branch:
 
 ```
-gh pr list --head '<branch>' --state all --json number,state,mergedAt,title,headRefOid,baseRefName --limit 3
+gh pr list --head '<branch>' --state all --json number,state,mergedAt,title,headRefOid,baseRefName,isCrossRepository --limit 5
 ```
+
+Ignore PRs from forks (`isCrossRepository`): they only share the branch name.
 
 - Any `OPEN` PR for the branch: skip it and say why, even if an earlier PR from it merged.
 - Otherwise a `MERGED` PR: cleanup candidate. Its checks below use the most recent merged PR.
 - `CLOSED` without merge, or no PR found: skip it and say why.
 - A worktree marked `locked` in `git worktree list` likely has a live session; skip it and mention it.
 - If the remote branch exists and `git rev-parse 'origin/<branch>'` differs from the merged PR's `headRefOid`, someone pushed after the merge: keep the remote branch and say why. The local branch and worktree can still go.
+- If the local branch has commits the merged PR doesn't (`git merge-base --is-ancestor '<branch>' '<headRefOid>'` fails), keep the local branch and its worktree and say why.
 
 Delete a skipped branch only if the user explicitly confirms. Even then, leave its remote branch unless they confirm that too, after being told that deleting it closes any open PR and may destroy the only copy of the work.
 
@@ -35,7 +38,7 @@ PRs are often squash-merged, so `git branch -d` will refuse even for merged work
 
 ## 3. Confirm every removal with the user
 
-Nothing is deleted unconfirmed. The one exception is a branch whose PR `jig:ship` just merged at the user's request: that request is the confirmation, so skip this step for that branch.
+Nothing is deleted unconfirmed. The one exception is a branch whose PR `jig:ship` just merged at the user's request: that request confirms removing it and moving the user's own stacked PRs in step 4, so skip this step for that branch.
 
 Present each cleanup candidate before touching it, with enough context to recognize the work:
 
@@ -50,13 +53,16 @@ Then ask which to remove. With multiple candidates, use AskUserQuestion with mul
 
 Skip the steps for whatever the target doesn't have (no worktree, no local branch, or no remote branch).
 
-1. If the current session is inside the worktree being removed, leave it first with ExitWorktree `action: "keep"`, or move back to the main checkout. Never use `remove` or `discard_changes`: squash-merged commits look unmerged to it.
+1. If the current session is inside the worktree being removed, leave it first with ExitWorktree `action: "keep"` (not `remove`: squash-merged commits look unmerged to it), or move back to the main checkout.
 2. Check for uncommitted files: `git -C <worktree-path> status --porcelain`. If non-empty, show what's there and re-confirm with the user before removing (dirty state is worth a second look even after step 3's approval).
 3. `git worktree remove <worktree-path>` (add `--force` only after a dirty state was confirmed disposable).
 4. `git branch -D <branch>`
-5. Stacked PRs: the open PRs based on this branch (`gh pr list --base '<branch>' --state open`), or the list `jig:ship` noted before merging, since GitHub may already have moved them. Move one onto the merged PR's `baseRefName` only if it's in the same repo, its head branch is under the user's prefix and passes step 1's name check, and its worktree is clean, not locked, and at `origin/<child>`. In that worktree, note `git rev-parse 'origin/<child>'`, run `git rebase --onto 'origin/<base>' '<headRefOid>'` to drop the parent's commits, push with `--force-with-lease='<child>:<noted sha>'`, then `gh pr edit <child> --base '<base>'`. If the rebase conflicts, abort it and ask the user. Leave any other stacked PR alone and report that it needs a rebase; while one still targets this branch, keep the remote branch so its PR isn't closed.
-6. `git push --force-with-lease='<branch>:<headRefOid>' origin --delete '<branch>'`, so the remote refuses if the branch moved since step 2. If the push fails, run `git ls-remote --heads origin '<branch>'`: empty output means the branch was deleted after the fetch, so move on; otherwise someone pushed after the merge, so keep it and say why.
+5. Stacked PRs are the open PRs based on this branch (`gh pr list --base '<branch>' --state open`), plus the user's open PRs whose head contains the merged commit (`git merge-base --is-ancestor '<headRefOid>' 'origin/<child>'`), since GitHub may already have moved those onto the base.
+   - Move one onto the merged PR's `baseRefName` only if it's in the same repo, its head branch is under the user's prefix, its name and the base both pass step 1's name check, its head contains `<headRefOid>`, and its worktree is clean, not locked, and at `origin/<child>`.
+   - To move it, in its worktree: note `git rev-parse 'origin/<child>'`, run `git rebase --onto 'origin/<base>' '<headRefOid>'`, push with `--force-with-lease='<child>:<noted sha>'`, then `gh pr edit <child> --base '<base>'`. If the rebase conflicts, abort it and ask the user.
+   - Leave any other stacked PR alone and report that it needs a rebase.
+6. Unless a stacked PR left alone in step 5 still targets this branch, `git push --force-with-lease='<branch>:<headRefOid>' origin --delete '<branch>'`, so the remote refuses if the branch moved since step 2. If the push fails, run `git ls-remote --heads origin '<branch>'`: empty output means the branch was deleted after the fetch, so move on; otherwise someone pushed after the merge, so keep it and say why.
 
 ## 5. Report
 
-One line per target: what was removed (worktree, local branch, remote branch) and any stacked PR moved onto the new base, or skipped and why (open PR, locked, dirty, pushed after merge, no PR found).
+One line per target: what was removed (worktree, local branch, remote branch) and any stacked PR moved onto the new base, or what was kept and why.
