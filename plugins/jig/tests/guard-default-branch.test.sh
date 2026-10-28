@@ -64,6 +64,18 @@ expect allow "$main" "git status" "other git commands on main"
 expect allow "$main" "echo 'git commit'" "git commit inside quoted text"
 expect allow "$work" "$(printf 'git commit -m "$(cat <<%sEOF%s\nSubject\n\ngit push origin main\nEOF\n)"' "'" "'")" \
   "heredoc body mentioning git push"
+expect allow "$work" "$(printf 'git commit -m "Retry\ngit push origin main now retries"')" \
+  "multi-line message mentioning git push"
+expect allow "$work" 'git commit -m "say \"hi\"; git push origin main"' "escaped quotes in a message"
+expect block "$main" "echo \"don't\" && git commit -m \"it's\"" "apostrophes in one-word strings"
+
+echo "branch switches earlier in the command"
+expect block "$work" "git switch main && git commit -m x" "switch to main, then commit"
+expect block "$work" "git checkout main && git merge --ff-only feature && git push" "checkout main, merge, push"
+expect allow "$main" "git switch -c fix-typo && git commit -am x && git push -u origin HEAD" "new branch from main, commit, push"
+expect allow "$main" "git checkout -b fix-x && git add . && git commit -m x" "checkout -b from main, then commit"
+expect allow "$work" "git checkout -- README.md && git commit -m x" "restoring a file isn't a switch"
+expect block "$main" "git checkout main README.md && git commit -m x" "restoring a file on main stays on main"
 
 echo "pushes"
 expect block "$work" "git push origin main" "explicit main"
@@ -80,6 +92,12 @@ expect allow "$work" "git push origin feature" "explicit feature branch"
 expect allow "$work" "git push --dry-run origin main" "dry run"
 expect allow "$work" "git push --tags" "tags only"
 expect allow "$work" "git push -o ci.skip origin feature" "push option value isn't a refspec"
+expect block "$main" "git push origin @" "@ from main"
+expect allow "$work" "git push origin @" "@ from a feature branch"
+expect allow "$work" "git push --repo origin main" "git takes main as the remote here"
+git -C "$work" config remote.origin.push refs/heads/main:refs/heads/main
+expect block "$work" "git push" "configured push refspec to main"
+git -C "$work" config --unset remote.origin.push
 
 echo "pushes with push.default tracking"
 git -C "$work" config push.default tracking
@@ -98,6 +116,9 @@ git init -q -b main "$tmp/new"
 git -C "$tmp/new" remote add origin "$tmp/empty.git"
 expect allow "$tmp/new" "git commit -m x" "remote with no branches yet"
 expect allow "$tmp/new" "git push -u origin main" "first push to an empty remote"
+git -C "$tmp/new" commit -q --allow-empty -m init
+git -C "$tmp/new" push -q -u origin main
+expect block "$tmp/new" "git commit -m x" "after the first push, with origin/HEAD unset"
 expect allow "$tmp" "git commit -m x" "not a repo"
 expect allow "$main" "ls -la" "not git"
 

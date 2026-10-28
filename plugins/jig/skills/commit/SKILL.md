@@ -14,7 +14,7 @@ Follow these steps exactly:
 
 ## 1. Make sure you're not on the default branch
 
-Run `git branch --show-current` and compare it with the remote default branch (`git symbolic-ref --short refs/remotes/origin/HEAD`, e.g. `origin/main`). If they match, stop: changes go through a pull request, so move the work onto its own branch with `jig:start-work` first. Committing on the default branch is fine only when the repo has no remote, or the remote has no default branch yet (a brand-new repo).
+Find the default branch: `git symbolic-ref --short refs/remotes/origin/HEAD` without its `origin/` prefix, or, if that fails, `main` or `master`, whichever exists under `refs/remotes/origin/`. If `git branch --show-current` is that branch, stop: changes go through a pull request, so move the work onto its own branch with `jig:start-work` first. Committing on the default branch is fine only when the repo has no remote, or none of those remote branches exist yet (a brand-new repo).
 
 ## 2. Understand what changed
 
