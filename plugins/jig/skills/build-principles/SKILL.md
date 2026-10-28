@@ -20,7 +20,7 @@ Hold every design, change, and review to the ones that bear on what it touches. 
 - **Everything means something.** Color, type, weight, icons, and layout carry meaning: the same thing always looks the same, and different things look different. Use color only when it means something, and stay monochrome otherwise. Build from shared tokens and components instead of styling inline.
 - **Expert craft in every detail.** Typography, spacing, alignment, hierarchy, iconography, light and dark mode, and accessibility (touch targets, contrast, text scaling, reduced motion) follow current best practice for the platform.
 - **Show, then decide.** When a visual choice is the user's, render real options with real content, varied from safe to bold, and iterate from feedback. Don't describe what could be shown.
-- **Look before handing off.** Render every screen and state a change touches (small and large, light and dark, empty, full, and error) and review them as an expert designer would, ideally with a fresh agent. Fix cramped or clipped text, misalignment, flicker, and layout shift before asking the user to look.
+- **Look before handing off.** Render every screen and state a change touches (small and large, light and dark, empty, full, and error) and review them as an expert designer would, ideally with a fresh agent. Fix cramped or clipped text, misalignment, flicker, and layout shift before asking the user to look. Before asking them to try it on a device, install the build from the change's own branch and say which branch is installed.
 - **Smooth is fast.** No jank, flicker, or jumping content. Transitions are quick, and things stay in place while data loads.
 
 ## Engineering

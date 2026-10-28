@@ -13,13 +13,7 @@ Read enough of the code, docs, and notes to make the design concrete. Don't gues
 
 ## 2. Check what's current
 
-Model knowledge lags, and feeling sure about a library or pattern is not evidence that it's still current. Whenever the design picks a library, framework, API, tool, or approach, search the web before proposing it:
-
-- The current stable version, and whether anything you plan to use is deprecated or replaced.
-- What's recommended now for this kind of problem, including recent research or newer options worth weighing.
-- How that compares with what the repo already pins. Staying on the existing stack is often right, but say when it's behind.
-
-Scale the effort to the change: a one-line fix with nothing external needs no research; a new feature or dependency does.
+Model knowledge lags, and feeling sure about a library or pattern is not evidence that it's still current. Whenever the design picks a library, framework, API, tool, or approach, search the web for its current version and what's recommended now, and compare that with what the repo already uses. Staying on the existing stack is often right, but say when it's behind. Scale the effort to the change: a one-line fix with nothing external needs no research; a new feature or dependency does.
 
 ## 3. Hold it to the principles
 
