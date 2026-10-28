@@ -6,5 +6,6 @@
     "url": "https://github.com/chrishunt"
   },
   "repository": "https://github.com/chrishunt/claude-plugins",
+  "license": "MIT",
   "keywords": ["workflow", "git", "pull-request", "code-review", "worktree"]
 }
