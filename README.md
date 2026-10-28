@@ -42,9 +42,13 @@ jig needs `git` and the GitHub CLI (`gh`).
 
 The skills use the open Agent Skills format, so other coding agents can load them, but jig is built and tested for Claude Code. The agents only work there, and some steps use Claude Code tools such as worktrees and subagents.
 
+## Feedback
+
+Bug reports and ideas are welcome as [issues](https://github.com/chrishunt/claude-plugins/issues). I don't usually accept pull requests.
+
 ## Developing
 
-Run these before opening a pull request:
+Run these before opening a pull request (CI runs them too):
 
 ```
 claude plugin validate .
