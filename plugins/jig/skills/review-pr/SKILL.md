@@ -16,7 +16,7 @@ The point is fresh eyes. The reviewers must not inherit this session's context, 
 
 ## 2. Review with fresh agents, one per lens
 
-Spawn one `jig:pr-reviewer` per lens, all in one message so they run in parallel: `correctness`, `security`, `spec`, `maintainability`. Skip a lens that can't apply (e.g. `security` for a docs-only change) and note it for the report. Give each only this, not a summary of the work or what you think is risky:
+Spawn one `jig:pr-reviewer` per lens, all in one message so they run in parallel: `correctness`, `security`, `spec`, `maintainability`. Skip a lens that can't apply (e.g. `security` for a docs-only change). Give each only this, not a summary of the work or what you think is risky:
 
 > Review pull request #<n> in <owner/repo> through the <lens> lens. The checkout is at <absolute path>, on branch <head>, based on <base>.
 
@@ -34,7 +34,7 @@ Spawn one `jig:finding-checker` per finding, all in one message so they run in p
 
 - **CONFIRMED and "Fix in this PR: yes"**: fix it in this session, following the repo's `CLAUDE.md`. Add or adjust a test when the finding is a behavior bug. Fix in severity order and keep each fix to the finding's scope.
 - **"ask"**, **UNCERTAIN**, or a fix that would change behavior the user chose: don't stop to ask. Make the call you would have recommended, weighing the spec, the repo's `CLAUDE.md`, the user's earlier decisions in this session and in memory, and the checker's reasoning. That call may be to fix, to fix differently, or to leave the code as it is. When the recommended call is a redesign beyond the finding's scope, leave the code as it is. Record each call for the report.
-- **REFUTED**, or CONFIRMED with "no": don't fix; list in one line each.
+- **REFUTED**, or CONFIRMED with "no": don't fix. Note the CONFIRMED ones for the report.
 - Anything under "Other" from a checker is treated as a new finding: verify it yourself before fixing.
 
 If nothing is fixed, skip to step 7.
@@ -47,6 +47,15 @@ If nothing is fixed, skip to step 7.
 
 ## 7. Report
 
-A short table: finding, severity, verdict, what happened (fixed / left as is / refuted). Then the commit pushed, the gate result, and any lens skipped.
+The user usually hasn't read the code, so report only what they can act on, in terms of what the PR does rather than where in the code. No table, finding numbers, severities, verdicts, or lens names. Refuted findings and skipped lenses stay out, and so do routine fixes, which the fix commit records.
 
-Then **Calls I made**: one entry for each finding decided under the "ask" rule and each assumption you relied on. Give what you decided, why, and the alternative, so the user can reverse any of them with one reply. If there were none, say so. If the fixes were large, offer one more round of this skill on the new head.
+Start with one line: how many issues were fixed and, if step 6 ran, the commit pushed and that the checks pass. For example, "Review fixed 3 issues and pushed `abc1234`; checks pass.", "Review fixed nothing; 2 issues left for later.", or "Review found nothing to fix."
+
+Then only the sections that have something in them, with each item in exactly one:
+
+- **Problems**: the checks failed, the push failed, or anything else stopped the review from finishing.
+- **Changed from the plan**: a fix that changed behavior from what the user approved (e.g. "an empty name now shows an error instead of saving"), with why and the alternative, so they can reverse it with one reply.
+- **Left for later**: real problems judged out of scope for this PR, one line each.
+- **Your call**: every other call from step 5 the user would notice or that left a possible problem in place, and each assumption they might not share. Give what you decided, why, and the alternative, so they can reverse it with one reply.
+
+If the fixes were large, offer one more round of this skill on the new head.
