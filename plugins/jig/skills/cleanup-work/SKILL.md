@@ -10,8 +10,10 @@ argument-hint: "[branch or worktree, omit to sweep all]"
 
 Run `git fetch origin --prune` first, so the list of remote branches is current.
 
-- No argument: every worktree, local branch, and remote branch under the user's branch prefix (from `git worktree list`, `git branch --list '<prefix>/*'`, and `git branch -r --list 'origin/<prefix>/*'`), plus any worktree `git worktree list` marks `prunable`. A branch that exists only on the remote is a target too. The prefix is the one the user's instructions give, otherwise their GitHub login from `gh api user --jq .login`.
+- No argument: every worktree, local branch, and remote branch under the user's branch prefix (from `git worktree list`, `git branch --list '<prefix>/*'`, and `git branch -r --list 'origin/<prefix>/*'`), plus any worktree `git worktree list` marks `prunable`. The prefix is the one the user's instructions give, otherwise their GitHub login from `gh api user --jq .login`.
 - With an argument: just that branch or worktree, along with its remote branch.
+
+Anyone with push access can name a remote branch, so take one as a target only if its name matches `^[A-Za-z0-9._/-]+$`; otherwise skip it and report the unusual name. Always single-quote branch names and paths in commands.
 
 ## 2. Verify merge state — never skip this
 
@@ -21,10 +23,13 @@ For each target branch:
 gh pr list --head <branch> --state all --json number,state,mergedAt,title,headRefOid --limit 3
 ```
 
-- `MERGED`: cleanup candidate.
-- `OPEN`, `CLOSED` without merge, or no PR found: skip it and say why. Only delete these if the user explicitly confirms.
+- Any `OPEN` PR for the branch: skip it and say why, even if an earlier PR from it merged.
+- Otherwise a `MERGED` PR: cleanup candidate. Its checks below use the most recent merged PR.
+- `CLOSED` without merge, or no PR found: skip it and say why.
 - A worktree marked `locked` in `git worktree list` likely has a live session; skip it and mention it.
-- If the remote branch exists and `git rev-parse origin/<branch>` differs from the PR's `headRefOid`, someone pushed after the merge: keep the remote branch and say why. The local branch and worktree can still go.
+- If the remote branch exists and `git rev-parse 'origin/<branch>'` differs from the merged PR's `headRefOid`, someone pushed after the merge: keep the remote branch and say why. The local branch and worktree can still go.
+
+Delete a skipped branch only if the user explicitly confirms. Even then, leave its remote branch unless they confirm that too, after being told that deleting it closes any open PR and may destroy the only copy of the work.
 
 PRs are often squash-merged, so `git branch -d` will refuse even for merged work. The gh merge state above is the source of truth; after it confirms `MERGED`, force-delete is safe.
 
@@ -46,7 +51,7 @@ Skip the steps for whatever the target doesn't have (no worktree, no local branc
 2. Check for uncommitted files: `git -C <worktree-path> status --porcelain`. If non-empty, show what's there and re-confirm with the user before removing (dirty state is worth a second look even after step 3's approval).
 3. `git worktree remove <worktree-path>` (add `--force` only after a dirty state was confirmed disposable).
 4. `git branch -D <branch>`
-5. `git push origin --delete <branch>`. If the remote branch is already gone (the host deleted it on merge), move on.
+5. `git push --force-with-lease='<branch>:<headRefOid>' origin --delete '<branch>'`, so the remote refuses if the branch moved since step 2. If the push fails, run `git ls-remote --heads origin '<branch>'`: empty output means the branch was deleted after the fetch, so move on; otherwise someone pushed after the merge, so keep it and say why.
 6. After all targets: `git worktree prune` and `git fetch --prune`.
 
 ## 5. Report
