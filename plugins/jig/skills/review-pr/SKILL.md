@@ -47,15 +47,15 @@ If nothing is fixed, skip to step 7.
 
 ## 7. Report
 
-The user usually hasn't read the code, so report only what they can act on, in terms of what the PR does rather than where in the code. No table, finding numbers, severities, verdicts, or lens names; refuted findings, skipped lenses, and routine fixes stay out (the fix commit records them).
+The user usually hasn't read the code, so report only what they can act on, in terms of what the PR does rather than where in the code. No table, finding numbers, severities, verdicts, or lens names. Refuted findings and skipped lenses stay out, and so do routine fixes, which the fix commit records.
 
-Start with one line: how many issues were fixed, the commit pushed, and that the checks pass. For example, "Review fixed 3 issues and pushed `abc1234`; checks pass." or "Review found nothing to fix."
+Start with one line: how many issues were fixed and, if step 6 ran, the commit pushed and that the checks pass. For example, "Review fixed 3 issues and pushed `abc1234`; checks pass.", "Review fixed nothing; 2 issues left for later.", or "Review found nothing to fix."
 
-Then only the sections that have something in them:
+Then only the sections that have something in them, with each item in exactly one:
 
 - **Problems**: the checks failed, the push failed, or anything else stopped the review from finishing.
-- **Changed from the plan**: a fix that changed behavior from what the user approved, described as behavior (e.g. "an empty name now shows an error instead of saving").
-- **Your call**: each call from step 5 the user would notice, and each assumption they might not share. Give what you decided, why, and the alternative, so they can reverse it with one reply.
+- **Changed from the plan**: a fix that changed behavior from what the user approved (e.g. "an empty name now shows an error instead of saving"), with why and the alternative, so they can reverse it with one reply.
 - **Left for later**: real problems judged out of scope for this PR, one line each.
+- **Your call**: every other call from step 5 the user would notice or that left a possible problem in place, and each assumption they might not share. Give what you decided, why, and the alternative, so they can reverse it with one reply.
 
 If the fixes were large, offer one more round of this skill on the new head.
