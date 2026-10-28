@@ -1,6 +1,6 @@
 {
   "name": "jig",
-  "description": "A design-first development workflow: agree on a design, work on its own branch, open a concise pull request, get a fresh-context review, and clean up after merge. Blocks commits and pushes to the default branch.",
+  "description": "A design-first development workflow: agree on a design, work on its own branch, open a concise pull request, get a fresh-context review, and clean up after merge.",
   "author": {
     "name": "Chris Hunt",
     "url": "https://github.com/chrishunt"
