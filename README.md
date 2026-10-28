@@ -10,7 +10,7 @@ A jig guides a tool so every cut comes out the same. This one guides Claude thro
 | --- | --- |
 | `design-first` | Before editing anything, shares a short design (goal, approach, research on current practice, decisions, what's left out) and waits for a yes. |
 | `build-principles` | The standards designs and reviews are held to: only what's needed, plain words, offline first, the user's data is safe, tested core, fresh reviews, concise everywhere. |
-| `start-work` | Right before the first edit, checks for existing branches and PRs, then makes a `<github-login>/<area>-<summary>` branch in a worktree inside the repo. |
+| `start-work` | Right before the first edit, checks for existing branches and PRs, then makes a `<github-login>/<area>-<summary>` branch in a worktree inside the repo, based on the default branch or, for stacked work, a parent PR's branch. |
 | `commit` | Reviews the diff, keeps junk and secrets out, stages files by name, and writes a short imperative commit message. |
 | `pr-style` | PR titles and bodies: two sentences up top, a little prose context, then what the tests check. |
 | `concise` | Rewrites any text to be as short as possible without losing anything important. |
