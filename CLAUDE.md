@@ -10,13 +10,8 @@ A Claude Code plugin marketplace (`.claude-plugin/marketplace.json`, named `chri
 - Don't set `version` in `plugin.json` or the marketplace entry: users track commits.
 - When a skill is added, removed, or changes what it does, update the table in `README.md`.
 - Skills and agents follow jig's own rules: `jig:concise` for wording, `jig:build-principles` for what to include.
-- The workflow that chains the skills lives once, in `plugins/jig/hooks/workflow.md`, which a SessionStart hook loads into every session. Keep it under the hook output cap of 10,000 characters.
+- The workflow that chains the skills lives once, in `plugins/jig/hooks/workflow.md`, which a SessionStart hook loads into every session. CI keeps it under the hook output cap.
 
 ## Before a pull request
 
-Both must pass:
-
-```
-claude plugin validate .
-claude plugin validate plugins/jig
-```
+Run the checks in the README's Developing section; CI runs them too.
