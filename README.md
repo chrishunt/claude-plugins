@@ -17,7 +17,7 @@ A jig guides a tool so every cut comes out the same. This one guides Claude thro
 | `review-pr` | Fresh-context agents review the PR in parallel, one each for correctness, security, spec, and maintainability. Their findings are merged, a second agent tries to disprove each one, and what holds up gets fixed and pushed. |
 | `cleanup-work` | After a PR merges, confirms the merge with `gh` and removes the worktree and the local and remote branches. |
 
-Claude uses the skills on its own when they apply, and you can run any of them directly, e.g. `/jig:review-pr`. The `pr-reviewer` and `finding-checker` agents do the work for `review-pr`.
+At the start of every session, a hook gives Claude the workflow that ties the skills together, so they run in order with no setup. You can also run any of them directly, e.g. `/jig:review-pr`. The `pr-reviewer` and `finding-checker` agents do the work for `review-pr`.
 
 ### Install
 
@@ -34,6 +34,7 @@ jig needs `git` and the GitHub CLI (`gh`).
 
 - **Branch prefix:** branches start with your GitHub login. To use something else, say so in your `~/.claude/CLAUDE.md`, e.g. "Name branches `jane/<area>-<summary>`".
 - **Commit and PR attribution:** jig leaves this to Claude Code's [`attribution` setting](https://code.claude.com/docs/en/settings).
+- **A different workflow in one repo:** say so in that repo's `CLAUDE.md`, which wins over jig's. To turn jig off there entirely, add `"enabledPlugins": {"jig@chrishunt": false}` to the repo's `.claude/settings.local.json`.
 
 ### Other tools
 
