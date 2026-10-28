@@ -35,6 +35,7 @@ jig needs `git` and the GitHub CLI (`gh`).
 
 - **Branch prefix:** branches start with your GitHub login. To use something else, say so in your `~/.claude/CLAUDE.md`, e.g. "Name branches `jane/<area>-<summary>`".
 - **Commit and PR attribution:** jig leaves this to Claude Code's [`attribution` setting](https://code.claude.com/docs/en/settings).
+- **Merging in auto mode:** auto mode may stop `ship` and ask you to approve the merge. To let it merge without asking, add `"Bash(gh pr merge *)"` to `permissions.allow` in `~/.claude/settings.json`; `ship` still merges only reviewed, green PRs.
 - **A different workflow in one repo:** say so in that repo's `CLAUDE.md`, which wins over jig's. To turn jig off there entirely, add `"enabledPlugins": {"jig@chrishunt": false}` to the repo's `.claude/settings.local.json`.
 
 ### Other tools
