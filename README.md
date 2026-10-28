@@ -16,7 +16,7 @@ A jig guides a tool so every cut comes out the same. This one guides Claude thro
 | `concise` | Rewrites any text to be as short as possible without losing anything important. |
 | `review-pr` | Fresh-context agents review the PR in parallel, one each for correctness, security, spec, and maintainability. Their findings are merged, a second agent tries to disprove each one, and what holds up gets fixed and pushed. |
 | `ship` | When you ask to merge, checks the PR is reviewed and green, merges it, cleans up without asking again, and runs the repo's release step if you asked for one or the repo says every merge ships. |
-| `cleanup-work` | After a PR merges, confirms the merge with `gh`, moves any stacked PRs onto the new base, and removes the worktree and the local and remote branches. |
+| `cleanup-work` | After a PR merges, confirms the merge with `gh`, moves your stacked PRs onto the new base, and removes the worktree and the local and remote branches. |
 
 At the start of every session, a hook gives Claude the workflow that ties the skills together, so they run in order with no setup. You can also run any of them directly, e.g. `/jig:review-pr`. The `pr-reviewer` and `finding-checker` agents do the work for `review-pr`.
 
@@ -35,7 +35,7 @@ jig needs `git` and the GitHub CLI (`gh`).
 
 - **Branch prefix:** branches start with your GitHub login. To use something else, say so in your `~/.claude/CLAUDE.md`, e.g. "Name branches `jane/<area>-<summary>`".
 - **Commit and PR attribution:** jig leaves this to Claude Code's [`attribution` setting](https://code.claude.com/docs/en/settings).
-- **Merging in auto mode:** auto mode may stop `ship` and ask you to approve the merge. To let it merge without asking, add `"Bash(gh pr merge *)"` to `permissions.allow` in `~/.claude/settings.json`; `ship` still merges only reviewed, green PRs.
+- **Merging in auto mode:** auto mode may stop `ship` and ask you to approve the merge. Adding `"Bash(gh pr merge *)"` to `permissions.allow` in a repo's `.claude/settings.local.json` skips that, but it lets any session in that repo merge any PR without asking.
 - **A different workflow in one repo:** say so in that repo's `CLAUDE.md`, which wins over jig's. To turn jig off there entirely, add `"enabledPlugins": {"jig@chrishunt": false}` to the repo's `.claude/settings.local.json`.
 
 ### Other tools
