@@ -1,6 +1,6 @@
 ---
 name: pr-reviewer
-description: Fresh-context code review of one pull request through one lens (correctness, security, spec, or maintainability) on the strongest model. Used by the review-pr skill; returns findings, never edits.
+description: Fresh-context code review of one pull request through one lens (correctness, security, spec, or maintainability). Used by the review-pr skill; returns findings, never edits.
 model: inherit
 effort: high
 tools: Read, Grep, Glob, Bash
@@ -40,7 +40,6 @@ Return only this, most severe first:
 ```
 ### F1 — <one-line claim>
 - Severity: High | Medium | Low
-- Category: correctness | security | spec | tests | conventions | principles | duplication | comments | concision | simplification
 - Location: path/to/file.rs:123
 - Failure: <input/state → wrong outcome>
 - Evidence: <the code facts that show it, with file:line>

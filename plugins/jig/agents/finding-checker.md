@@ -1,6 +1,6 @@
 ---
 name: finding-checker
-description: Adversarially verifies, on the strongest model, one code-review finding against the code and says whether it should be fixed in this pull request. Used by the review-pr skill; never edits.
+description: Adversarially verifies one code-review finding against the code and says whether it should be fixed in this pull request. Used by the review-pr skill; never edits.
 model: inherit
 effort: high
 tools: Read, Grep, Glob, Bash

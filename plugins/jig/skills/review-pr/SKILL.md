@@ -1,16 +1,16 @@
 ---
 name: review-pr
-description: Review an open pull request with fresh-context agents on the strongest model, one per lens (correctness, security, spec, maintainability), check every finding with a second independent agent, then fix what holds up, run the repo's checks, and push. Use right after opening a PR for finished work, or when the user asks for a fresh review of a PR.
+description: Review an open pull request with fresh-context agents, one per lens (correctness, security, spec, maintainability), check every finding with a second independent agent, then fix what holds up, run the repo's checks, and push. Use right after opening a PR for finished work, after pushing new non-trivial commits to a reviewed PR (other than this skill's own fixes), or when the user asks for a fresh review of a PR.
 argument-hint: "[PR number or URL, defaults to the current branch's PR]"
 ---
 
-# /review-pr — fresh review, checked findings, fixes
+# Review a PR with fresh eyes
 
-The point is fresh eyes. The reviewers must not inherit this session's context, so each runs as a `jig:pr-reviewer` agent (a new agent, not a fork) and is told only which PR to read and its lens. The checkers run as `jig:finding-checker` agents, one per finding. Both run on the strongest model: when spawning either one, pass `model` set to the most capable model the Agent tool offers.
+The point is fresh eyes. The reviewers must not inherit this session's context, so each runs as a `jig:pr-reviewer` agent (a new agent, not a fork) and is told only which PR to read and its lens. The checkers run as `jig:finding-checker` agents, one per finding. Don't pass a `model` when spawning either one: they run on the session's model, so every review is held to the same standard.
 
 ## 1. Pin down the PR
 
-- The argument, or `gh pr view --json number,url,headRefName,baseRefName,title` for the current branch.
+- The argument, or the current branch's PR.
 - The working tree must be clean and the branch pushed (`git status`, `git log @{u}..`), so the reviewer reads exactly what's on the PR. If not, stop and ask the user whether to commit and push first.
 - Note the absolute path of the checkout (the worktree, if the session is in one).
 
