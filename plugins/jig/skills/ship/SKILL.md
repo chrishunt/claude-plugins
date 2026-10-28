@@ -1,6 +1,6 @@
 ---
 name: ship
-description: Merge a reviewed pull request, clean up its branch and worktree, and run the repo's release or deploy step when asked. Use when the user asks to merge a PR, or to ship, release, or deploy finished work.
+description: Merge a reviewed pull request, clean up its branch and worktree, and run the repo's release or deploy step when asked or when the repo says every merge ships. Use when the user asks to merge or ship a PR.
 argument-hint: "[PR number or URL, defaults to the current branch's PR]"
 ---
 
@@ -10,17 +10,19 @@ Asking to merge is the user's approval to merge this PR and clean up after it. D
 
 ## 1. Check it's ready
 
-- The PR is open and not a draft, and its checks pass. Wait for checks still running; if any fail, stop and report them.
-- `jig:review-pr` has reviewed the current head. If nothing in this session shows that, and the PR is more than a version bump or changelog line, run `jig:review-pr` first.
+- Find the PR's number, head branch, and base while still in its worktree.
+- The base is the default branch. If it's another PR's branch, stop and offer to ship that PR first.
+- `jig:review-pr` has reviewed the current head. If nothing in this session shows that, and the PR is more than a version bump or changelog line, run it now. If its report changed behavior from the plan, stop and wait for the user.
+- The PR is open and not a draft, and its checks pass on the current head. Wait for checks still running; if any fail, stop and report them.
+- Note the head commit those checks passed on, and the open PRs based on the head branch, before anything changes.
 
 ## 2. Merge
 
-- If the session is inside the PR's worktree, leave it with ExitWorktree `action: "keep"`. Never use `remove`: squash-merged commits look unmerged to it, so it asks to discard them.
-- Merge with `gh pr merge`, using the merge method the repo allows and its recent PRs used. Don't pass `--delete-branch` (`jig:cleanup-work` removes branches safely) and don't change repo settings.
+Run `gh pr merge <number> --match-head-commit <sha>`, with the merge method the repo allows and its recent PRs used. If the head moved, stop and report it. Don't pass `--delete-branch`, and don't change repo settings.
 
 ## 3. Clean up
 
-Run `jig:cleanup-work` on the PR's branch. The user's request to merge confirms removing its worktree and branches, so skip cleanup's confirmation step for this branch only. Its other checks still apply.
+Run `jig:cleanup-work` on the head branch, passing along the stacked PRs noted in step 1.
 
 ## 4. Release
 
@@ -28,4 +30,4 @@ If the user asked to release or deploy, or the repo's CLAUDE.md says every merge
 
 ## 5. Report
 
-One line: the PR merged and how, what cleanup removed, any stacked PRs moved onto the new base, and what was released. Then anything skipped, and why.
+One line for the merge, how it was merged, and anything released, followed by `jig:cleanup-work`'s report.
