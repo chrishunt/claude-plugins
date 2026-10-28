@@ -28,7 +28,7 @@ Combine the lists. Where findings share a location or a cause, keep one, with th
 
 ## 4. Check each finding with another agent
 
-Spawn one `jig:finding-checker` per finding, all in one message so they run in parallel. Give each the PR line from step 2, without the lens, plus that finding's block verbatim.
+Spawn one `jig:finding-checker` per finding, all in one message so they run in parallel. Give each the PR line from step 2, without the lens, plus that finding's block verbatim. With more than about 12 findings, give each checker two or three related findings instead, and ask for one verdict block per finding.
 
 ## 5. Fix what holds up
 
