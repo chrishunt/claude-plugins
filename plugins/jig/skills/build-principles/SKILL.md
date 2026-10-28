@@ -40,4 +40,4 @@ Hold every design, change, and review to the ones that bear on what it touches. 
 
 - **Pull requests, reviewed fresh.** Every change goes through a pull request reviewed by an agent with no context from the work, and what holds up gets fixed.
 - **Docs say why, once.** Each decision has one doc that owns it, written for a reader with no context, while exact numbers live in code. Add one short changelog line for each change a user would notice, and version releases properly.
-- **Concise everywhere.** UI text, docs, changelogs, commits, and replies are as short as possible without losing anything important.
+- **Concise everywhere.** UI text, docs, changelogs, commits, and replies are as short as possible without losing anything important. Comments only explain a non-obvious why, never what the code already shows.
