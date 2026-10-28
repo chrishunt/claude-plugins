@@ -15,7 +15,7 @@ A jig guides a tool so every cut comes out the same. This one guides Claude thro
 | `pr-style` | PR titles and bodies: two sentences up top, a little prose context, then what the tests check. |
 | `concise` | Rewrites any text to be as short as possible without losing anything important. |
 | `review-pr` | Fresh-context agents review the PR in parallel, one each for correctness, security, spec, and maintainability. Their findings are merged, a second agent tries to disprove each one, and what holds up gets fixed and pushed. |
-| `cleanup-work` | After a PR merges, confirms the merge with `gh` and removes the worktree and branch. |
+| `cleanup-work` | After a PR merges, confirms the merge with `gh` and removes the worktree and the local and remote branches. |
 
 Claude uses the skills on its own when they apply, and you can run any of them directly, e.g. `/jig:review-pr`. The `pr-reviewer` and `finding-checker` agents do the work for `review-pr`.
 
