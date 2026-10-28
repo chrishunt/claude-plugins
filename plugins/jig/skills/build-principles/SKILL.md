@@ -27,6 +27,7 @@ Hold every design, change, and review to the ones that bear on what it touches. 
 
 - **Current best practice, researched.** Check current docs, versions, and recommendations instead of relying on memory. The standards of expert practitioners in every field the app touches apply.
 - **Simple, with no duplication.** Each rule, value, and concept lives in exactly one place, so consistency follows. Prefer removing complexity to managing it.
+- **Instructions hold only what a model would miss.** Skills, agents, prompts, and CLAUDE.md files record preferences, safety guards, and lessons from real mistakes, and leave out how-to a capable model already knows.
 - **Logic in a tested core.** Behavior lives in a UI-free module with tests, and views only lay out and handle input. A rule is written once and shared by every platform and surface.
 - **Tested end to end.** Tests cover all behavior: logic, UI flows, parsing, migrations, saved-format compatibility, network, and error paths. They fail without the change they protect. Check models, parsers, and estimates against real data as well as hand-made fixtures, and keep real test data beside the repo, out of version control.
 - **Fast by design.** Measure, then make startup, loading, and interaction as quick as possible. Cache sensibly, invalidate correctly, and keep slow work off the user's path.
