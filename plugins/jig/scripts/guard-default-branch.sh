@@ -16,6 +16,7 @@ command=$(printf '%s' "$input" | jq -r '.tool_input.command // empty')
 dir=$(printf '%s' "$input" | jq -r '.cwd // empty')
 [ -n "$command" ] || exit 0
 [ -n "$dir" ] || dir=$PWD
+switched_top="" switched_to=""
 
 block() { # action branch
   echo "jig: blocked, this would $1 the default branch ($2). Changes go through a pull request: put the work on its own branch (see the jig:start-work skill) and push that branch. If the user wants this anyway, they can run the command themselves." >&2
@@ -26,8 +27,52 @@ in_repo() { # dir
   git -C "$1" rev-parse --is-inside-work-tree > /dev/null 2>&1
 }
 
+toplevel() { # dir
+  git -C "$1" rev-parse --show-toplevel 2> /dev/null
+}
+
+# The branch checked out in dir, counting a `git switch` or `git checkout`
+# earlier in the same command (recorded in switched_top and switched_to).
 current_branch() { # dir
-  git -C "$1" symbolic-ref --quiet --short HEAD 2> /dev/null
+  if [ -n "$switched_top" ] && [ "$(toplevel "$1")" = "$switched_top" ]; then
+    echo "$switched_to"
+  else
+    git -C "$1" symbolic-ref --quiet --short HEAD 2> /dev/null
+  fi
+}
+
+# Records the branch a `git switch` or `git checkout` moves to, if any.
+note_switch() { # dir subcommand args...
+  local dir=$1 sub=$2 arg name="" create=0 detach=0 expect=0 positional=0 top
+  shift 2
+  for arg in "$@"; do
+    if [ "$expect" = 1 ]; then name=$arg; create=1; expect=0; continue; fi
+    case $arg in
+      --) [ "$sub" = checkout ] && return ;;
+      -c | -C | -b | -B | --create | --force-create | --orphan) expect=1 ;;
+      -d | --detach) detach=1 ;;
+      -*) ;;
+      *)
+        positional=$((positional + 1))
+        [ "$positional" = 1 ] && [ "$create" = 0 ] && name=$arg
+        ;;
+    esac
+  done
+  # `git checkout <branch> <path>` restores a file and stays on the branch.
+  [ "$sub" = checkout ] && [ "$create" = 0 ] && [ "$positional" -gt 1 ] && return
+  top=$(toplevel "$dir") || return
+  if [ "$detach" = 1 ]; then
+    switched_top=$top switched_to=""
+    return
+  fi
+  [ -n "$name" ] || return
+  # Without -c or -b, a name is a branch only if it exists here or on a remote;
+  # otherwise it's a path or a commit.
+  if [ "$create" = 0 ] && ! git -C "$dir" show-ref --verify --quiet "refs/heads/$name" &&
+    [ -z "$(git -C "$dir" for-each-ref --count=1 "refs/remotes/*/$name")" ]; then
+    return
+  fi
+  switched_top=$top switched_to=$name
 }
 
 # origin, or the only remote when there's no origin.
@@ -114,6 +159,14 @@ check_push() { # dir args...
   [ "$all" = 1 ] && block "push to" "$def"
   mode=$(git -C "$dir" config push.default || echo simple)
 
+  # With no refspec given, git pushes the remote's configured ones, if any.
+  if [ "$n" = 0 ] && [ "$tags" = 0 ]; then
+    while IFS= read -r r; do
+      refspecs[n]=$r
+      n=$((n + 1))
+    done < <(git -C "$dir" config --get-all "remote.$remote.push")
+  fi
+
   if [ "$n" = 0 ]; then
     [ "$tags" = 1 ] && return
     case $mode in
@@ -135,7 +188,7 @@ check_push() { # dir args...
       *:*) dst=${r#*:} ;;
       *)
         src=$r
-        [ "$src" = HEAD ] && src=$cur
+        case $src in HEAD | @) src=$cur ;; esac
         dst=$src
         # With these modes, a bare branch name pushes to the branch it tracks.
         case $mode in
@@ -151,8 +204,9 @@ check_push() { # dir args...
   done
 }
 
-# One line per simple command: drop heredoc bodies, unquote single words,
-# blank out quoted text, then split on ; & | && || ( and ).
+# One line per simple command: drop heredoc bodies, unquote one-word strings,
+# blank out other quoted text (even across lines), then split on ; & | && ||
+# ( and ).
 segments=$(printf '%s\n' "$command" |
   awk '
     skip != "" { t = $0; gsub(/^[ \t]+|[ \t]+$/, "", t); if (t == skip) skip = ""; next }
@@ -164,8 +218,23 @@ segments=$(printf '%s\n' "$command" |
         skip = d
       }
     }' |
-  sed -E -e "s/\"([^\" ]*)\"/\\1/g" -e "s/'([^' ]*)'/\\1/g" \
-    -e 's/"[^"]*"/Q/g' -e "s/'[^']*'/Q/g" |
+  awk '
+    {
+      line = $0
+      out = (q != "") ? "Q" : ""
+      while (length(line) > 0) {
+        c = substr(line, 1, 1); line = substr(line, 2)
+        if (q == "") {
+          if (c == "\"" || c == "\047") { q = c; buf = ""; multiline = 0 } else out = out c
+        } else if (q == "\"" && c == "\\") {
+          buf = buf c substr(line, 1, 1); line = substr(line, 2)
+        } else if (c == q) {
+          out = out ((multiline || buf ~ /[ \t;&|()]/) ? "Q" : buf); q = ""
+        } else buf = buf c
+      }
+      if (q != "") multiline = 1
+      print out
+    }' |
   awk '{ gsub(/&&|\|\||[;&|()]/, "\n"); print }')
 
 while IFS= read -r segment; do
@@ -207,6 +276,7 @@ while IFS= read -r segment; do
   case ${words[j]} in
     commit) check_commit "$gitdir" ;;
     push) check_push "$gitdir" "${words[@]:j+1}" ;;
+    switch | checkout) note_switch "$gitdir" "${words[j]}" "${words[@]:j+1}" ;;
   esac
 done <<< "$segments"
 
