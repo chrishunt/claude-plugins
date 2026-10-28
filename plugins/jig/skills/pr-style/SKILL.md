@@ -29,4 +29,4 @@ Cut everything else: field/type taxonomies, detailed history of prior fixes, res
 
 **Testing section**: short bullets are fine here. State what the tests assert and that they fail without the fix.
 
-Prefer readable looseness over technical precision in the body; precision lives in the diff and the ticket. Grammatically complete sentences always; never compress by clipping subjects or verbs. Don't restate what the diff already shows and don't include operational runbooks or follow-up commands (those belong on the ticket).
+Prefer readable looseness over technical precision in the body; precision lives in the diff and the ticket. Don't restate what the diff already shows and don't include operational runbooks or follow-up commands (those belong on the ticket).

@@ -1,6 +1,6 @@
 ---
 name: concise
-description: Rewrite a piece of writing to be as concise as possible without losing important information. Use whenever the user asks to make text more concise, tighten it, shorten it, or simplify it — tickets, PR bodies, docs, chat messages, emails, announcements, any prose.
+description: Rewrite a piece of writing to be as concise as possible without losing important information. Use whenever the user asks to make text more concise, tighten it, shorten it, or simplify it: tickets, PR bodies, docs, chat messages, emails, announcements, any prose.
 ---
 
 Rewrite the given text following these rules, in priority order:
