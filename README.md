@@ -19,8 +19,6 @@ A jig guides a tool so every cut comes out the same. This one guides Claude thro
 
 Claude uses the skills on its own when they apply, and you can run any of them directly, e.g. `/jig:review-pr`. The `pr-reviewer` and `finding-checker` agents do the work for `review-pr`.
 
-jig also blocks Claude from committing on, or pushing to, a repo's default branch, so every change goes through a pull request. Repos with no remote, or whose remote has no branches yet, are left alone. To do it anyway, run the command yourself.
-
 ### Install
 
 ```
@@ -30,7 +28,7 @@ jig also blocks Claude from committing on, or pushing to, a repo's default branc
 
 To get updates automatically, open `/plugin`, go to **Marketplaces**, select `chrishunt`, and turn on auto-update. Otherwise run `/plugin marketplace update chrishunt`.
 
-jig needs `git`, the GitHub CLI (`gh`), and `jq`.
+jig needs `git` and the GitHub CLI (`gh`).
 
 ### Make it yours
 
@@ -39,7 +37,7 @@ jig needs `git`, the GitHub CLI (`gh`), and `jq`.
 
 ### Other tools
 
-The skills use the open Agent Skills format, so other coding agents can load them, but jig is built and tested for Claude Code. The agents and the default-branch guard only work there, and some steps use Claude Code tools such as worktrees and subagents.
+The skills use the open Agent Skills format, so other coding agents can load them, but jig is built and tested for Claude Code. The agents only work there, and some steps use Claude Code tools such as worktrees and subagents.
 
 ## Developing
 
@@ -48,7 +46,6 @@ Run these before opening a pull request:
 ```
 claude plugin validate .
 claude plugin validate plugins/jig
-plugins/jig/tests/guard-default-branch.test.sh
 ```
 
 To try an unmerged change, start Claude with `claude --plugin-dir plugins/jig` from your checkout.
