@@ -9,7 +9,7 @@ The user wants to see the plan and say go before anything changes. Reading, sear
 
 ## 1. Look before proposing
 
-Read enough of the code, docs, and notes to make the design concrete. Don't guess at things you can check. That includes how the app is watched in production: error tracking, logs, metrics, flags, and any connected tools for them.
+Read enough of the code, docs, and notes to make the design concrete. Don't guess at things you can check, including how production is watched and which connected tools can see it.
 
 ## 2. Check what's current
 
