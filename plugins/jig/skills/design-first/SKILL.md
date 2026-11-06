@@ -9,7 +9,7 @@ The user wants to see the plan and say go before anything changes. Reading, sear
 
 ## 1. Look before proposing
 
-Read enough of the code, docs, and notes to make the design concrete. Don't guess at things you can check.
+Read enough of the code, docs, and notes to make the design concrete. Don't guess at things you can check. That includes how the app is watched in production: error tracking, logs, metrics, flags, and any connected tools for them.
 
 ## 2. Check what's current
 
@@ -25,6 +25,7 @@ Keep it as short as the change allows: a few lines for a small fix, a page for a
 
 - **Goal:** what changes for the user, in one or two sentences.
 - **Approach:** how it will work, and the files or pieces it touches.
+- **Verification:** how we'll know in production that it works and broke nothing: the signals to check, any new one the change adds, and for a risky change, the flag and how to roll back. "None" when nothing runs in production.
 - **Current practice:** what you checked, what you found, and source links; or one line saying why no research was needed.
 - **Decisions:** any choice the user should make, each with your recommendation.
 - **Not doing:** anything nearby you are deliberately leaving out.

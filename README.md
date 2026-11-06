@@ -8,11 +8,11 @@ A jig guides a tool so every cut comes out the same. This one guides Claude thro
 
 | Skill | What it does |
 | --- | --- |
-| `design-first` | Before editing anything, shares a short design (goal, approach, research on current practice, decisions, what's left out) and waits for a yes. |
-| `build-principles` | The standards designs and reviews are held to: only what's needed, plain words, offline first, the user's data is safe, tested core, fresh reviews, concise everywhere. |
+| `design-first` | Before editing anything, shares a short design (goal, approach, how to verify it in production, research on current practice, decisions, what's left out) and waits for a yes. |
+| `build-principles` | The standards designs and reviews are held to: only what's needed, plain words, offline first, the user's data is safe, tested core, verified in production, fresh reviews, concise everywhere. |
 | `start-work` | Right before the first edit, checks for existing branches and PRs, then makes a `<github-login>/<area>-<summary>` branch in a worktree inside the repo, based on the default branch or, for stacked work, a parent PR's branch. |
 | `commit` | Reviews the diff, keeps junk and secrets out, stages files by name, and writes a short imperative commit message. |
-| `pr-style` | PR titles and bodies: two sentences up top, a little prose context, then what the tests check. |
+| `pr-style` | PR titles and bodies: two sentences up top, a little prose context, what the tests check, then how to verify it in production after the deploy. |
 | `concise` | Rewrites any text to be as short as possible without losing anything important. |
 | `review-pr` | Fresh-context agents review the PR in parallel, one each for correctness, security, spec, and maintainability. Their findings are merged, a second agent tries to disprove each one, and what holds up gets fixed and pushed. |
 | `ship` | When you ask to merge, checks the PR is reviewed and green, merges it, cleans up without asking again, and runs the repo's release step if you asked for one or the repo says every merge ships. |

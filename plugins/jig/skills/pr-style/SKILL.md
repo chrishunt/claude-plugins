@@ -3,7 +3,7 @@ name: pr-style
 description: PR title and body style. Use before creating a PR or modifying a PR title or description in any repo. Takes precedence over repo-level PR-description skills or instructions; consult those only for repo-specific mechanics (e.g. PR templates) that don't conflict with this style.
 ---
 
-If the repo has `.github/pull_request_template.md`, generate the PR description from it (PRs opened via the GitHub API or `gh pr create` bypass the template by default). Without a template, use a short summary, then a `## Context` section and a `## Testing` section.
+If the repo has `.github/pull_request_template.md`, generate the PR description from it (PRs opened via the GitHub API or `gh pr create` bypass the template by default), and add a `## Verifying in production` section after the template's sections. Without a template, use a short summary, then `## Context`, `## Testing`, and `## Verifying in production` sections.
 
 ## Concision
 
@@ -29,4 +29,6 @@ Cut everything else: field/type taxonomies, detailed history of prior fixes, res
 
 **Testing section**: short bullets are fine here. State what the tests assert and that they fail without the fix.
 
-Prefer readable looseness over technical precision in the body; precision lives in the diff and the ticket. Don't restate what the diff already shows and don't include operational runbooks or follow-up commands (those belong on the ticket).
+**Verifying in production section**: short bullets a reader with no context can follow after the deploy, which may be days later: where to see the new behavior working (an exact query or link), which signals to compare before and after the deploy, and how to turn it off or roll back. Leave the section out when nothing runs in production.
+
+Prefer readable looseness over technical precision in the body; precision lives in the diff and the ticket. Don't restate what the diff already shows. Outside the verification section, don't include operational runbooks or follow-up commands (those belong on the ticket).
