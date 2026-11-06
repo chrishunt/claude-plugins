@@ -25,7 +25,7 @@ Keep it as short as the change allows: a few lines for a small fix, a page for a
 
 - **Goal:** what changes for the user, in one or two sentences.
 - **Approach:** how it will work, and the files or pieces it touches.
-- **Verification:** how we'll know in production that it works and broke nothing: the signals to check, any new one the change adds, and for a risky change, the flag and how to roll back. "None" when nothing runs in production.
+- **Verification:** how we'll know in production that it works and broke nothing, as `jig:build-principles` describes. "None" when nothing runs in production.
 - **Current practice:** what you checked, what you found, and source links; or one line saying why no research was needed.
 - **Decisions:** any choice the user should make, each with your recommendation.
 - **Not doing:** anything nearby you are deliberately leaving out.
